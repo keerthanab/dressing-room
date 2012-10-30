@@ -1,0 +1,93 @@
+doctype 5
+html(xmlns:fb='http://ogp.me/ns/fb#')
+	head
+		title= "Get Envweeed!"
+		link(rel='stylesheet', href="/libs/bootstrap/css/bootstrap.css")
+		link(rel='stylesheet', href="/libs/bootstrap/css/example-fluid-layout.css")
+
+		link(rel='stylesheet', href='/libs/bootstrap/css/bootstrap-responsive.min.css')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		
+		
+		
+-var user= userName;
+	body
+
+	
+		.navbar.navbar-fixed-top
+			.navbar-inner
+				.container-fluid
+					a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
+					a(href='/').brand Open Closet
+					.nav-collapse
+						ul.nav
+							li.active
+								a(href='/') Home
+							li.dropdown
+								a.dropdown-toggle(data-toggle="dropdown") About
+									b.caret
+								ul.dropdown-menu
+									li
+										a(href="/") About Us
+									li
+										a(href="/") About Company
+										
+							li
+								a(href='/') Contact Us
+								br
+							li
+								form.navbar-search.pull-left
+									input.search-query(type="text", placeholder="Search", height=5)
+										
+					if user==null
+						ul.nav.pull-right
+							li
+								a(href="/").dropdown-toggle(data-toggle="dropdown")
+									i.icon-user.icon-white
+									|     Login 
+									b.caret
+								ul.dropdown-menu
+									li
+										img(src='/images/fblogin-button.png', onclick='fbConnect();')
+										
+									li
+										script(src='/jsIncludes/fb.js')
+										button#fb-auth.btn.btn-success(onclick='fbConnect();', scope='email') Login
+										
+
+									li
+										p Hi
+										
+					if user!=null
+						ul.nav.pull-right
+							li
+								a(href="/").dropdown-toggle(data-toggle="dropdown")
+									i.icon-user.icon-white
+									|     #{user} 
+									b.caret
+								ul.dropdown-menu
+									li
+										a(href="/signout")
+											i.icon-cog
+											| 	Sign Out
+								
+							
+										
+								
+
+br									
+block content
+
+script(src='/js/fbLogin1.js')
+script(src='/routes/user.js')
+
+	
+script(src='/libs/bootstrap/js/bootstrap.js') 
+script(src='/libs/bootstrap/js/bootstrap.min.js')
+script(src='/libs/bootstrap/js/jquery.js')
+script(src='/twitter-bootstrap/docs/assets/js/bootstrap-dropdown.js')
+		
+
+ 
+  
+    
