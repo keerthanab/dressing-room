@@ -1,7 +1,16 @@
 extends layout
 
 
-
+block content
+	.container-fluid
+		.row-fluid
+			.span3
+				.well-sidebar.nav
+			
+			.span9
+				form.form-horizontal(method='post', enctype='multipart/form-data', action='/fileUpload')
+					input.input-large(type="file",name="firstUpload")
+					input(type='submit')
 
 					
 
