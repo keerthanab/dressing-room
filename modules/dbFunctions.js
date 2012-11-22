@@ -35,7 +35,7 @@ AM.update=function (user, callBack){
 
 };
 
-AM.upoadImage = function(image, callBack){	
+AM.uploadImage = function(image, callBack){	
 	console.log("in DBFunc "+image.name);
 	var gridStoreWrite = new GridStore(AM.db, new ObjectID(),image.name,"w",{metadata: {"userID":12345}}); 
 	gridStoreWrite.writeFile(image.path, function(err, result){

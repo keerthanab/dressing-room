@@ -42,7 +42,7 @@ exports.fileUpload = function(req, res) {
     console.log(req.files.firstUpload.size);
     //console.log(req.files.firstUpload.name);
    
-    dbFunctions.upoadImage(req.files.firstUpload); // TODO: give a callback function and check the flow if it returned back to index.js from dbFunctions!
+    dbFunctions.uploadImage(req.files.firstUpload); // TODO: give a callback function and check the flow if it returned back to index.js from dbFunctions!
     
     res.render('index', { title: 'Express', userName: req.session.userName });
 };
