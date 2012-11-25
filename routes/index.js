@@ -5,6 +5,8 @@ var Imager = require('imager')
   , imagerConfig = require('../config/example-config')
   , imager = new Imager(imagerConfig, 'S3'); // or 'S3' for amazon
 
+var knox = require('knox');
+
 /*
  * GET home page.
  */
@@ -46,14 +48,30 @@ exports.fileUpload = function(req, res) {
     //console.log(req.body);
     console.log("file-size:"+req.files.firstUpload.size);
     console.log("file-name:"+req.files.firstUpload.name);
- 	console.log("file-path:"+req.files.firstUpload.path);
+ 	console.log("file-path:"+ "../"+req.files.firstUpload.path);
+	
+	var client = knox.createClient({
+    key: 'AKIAIANJ4E5XFAUZ5XLQ'
+  , secret: 'jq3axHDCYLr8Qyf1t5lQgeZ3ZtuHB1dljnQJSgr9'
+  , bucket: 'chiti'
+});
+
+
+
    
+
+client.putFile('public/images/sample.jpg', 'public/images/sample.jpg', {'Content-Type': 'image/jpeg'}, function(err, result) {
+    if (err) { console.log('Operation Failed'+ err); }
+    else { console.log('Uploaded successfuly'); }
+});
+
+
 /*	imager.upload(req.files.firstUpload, 
 		function(err, cdnUri, files) {
 			console.log("WOW -- I have almost uploaded the image");
 			
 		}, 'projects'); */
-	imager.upload([req.files.firstUpload.path], function (err, cdnUri, files) {
+	imager.upload(["public/images/sample.jpg"], function (err, cdnUri, files) {
 		// do your stuff
 		console.log("I am in callback of upload fucntion ");
 		console.log("error object in callback: -- "+err);
