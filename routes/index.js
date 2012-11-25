@@ -1,11 +1,10 @@
 
 var dbFunctions = require('../modules/dbFunctions');
 
-var Imager = require('imager')
-  , imagerConfig = require('../config/example-config')
-  , imager = new Imager(imagerConfig, 'S3'); // or 'S3' for amazon
+
 
 var knox = require('knox');
+var s3Config = require('../config/example-config');
 
 /*
  * GET home page.
@@ -18,7 +17,7 @@ exports.home = function(req, res){
   if(req.session.userName == null){
   	res.render('home', { title: 'Envwe', userName: req.session.userName });
   } else{
-  		res.render('index', { title: 'Envwe', userName: req.session.userName });
+  		res.render('index', { title: 'Envwe', userName: req.session.userName, filePath: null });
   	}
   
 };
@@ -32,7 +31,7 @@ exports.index = function(req, res){
 	});
 	var employer=JSON.parse(req.param('userDet'));
 	req.session.userName = req.param('userId');
-  	res.render('index', { title: 'Express', userName: req.session.userName });
+  	res.render('index', { title: 'Express', userName: req.session.userName, filePath: null });
 };
 
 
@@ -51,38 +50,40 @@ exports.fileUpload = function(req, res) {
  	console.log("file-path:"+ "../"+req.files.firstUpload.path);
 	
 	var client = knox.createClient({
-    key: 'AKIAIANJ4E5XFAUZ5XLQ'
-  , secret: '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'
-  , bucket: 'chiti'
+    key: s3Config.key
+  , secret: s3Config.secret
+  , bucket: s3Config.bucket
 });
 
 
 
-   
+   //DUMMY FILE I CREATED 'public/images/sample.jpg'
 
-client.putFile('public/images/sample.jpg', 'public/images/sample.jpg', {'Content-Type': 'image/jpeg'}, function(err, result) {
+client.putFile(req.files.firstUpload.path, 'sample.jpg', {'Content-Type': 'image/jpeg'}, function(err, result) {
     if (err) { console.log('Operation Failed'+ err); }
     else { console.log('Uploaded successfuly'); }
+
 });
 
+// get the file from amazon
 
-/*	imager.upload(req.files.firstUpload, 
-		function(err, cdnUri, files) {
-			console.log("WOW -- I have almost uploaded the image");
-			
-		}, 'projects'); */
-	imager.upload(["public/images/sample.jpg"], function (err, cdnUri, files) {
-		// do your stuff
-		console.log("I am in callback of upload fucntion ");
-		console.log("error object in callback: -- "+err);
-		console.log("Okay so whats's the access URI now?" +cdnUri+'/'+'thumb'+files[0]);
-		}, 'projects');
+// We need the fs module so that we can write the stream to a file
+var fs = require('fs');
+// Set the file name for WriteStream
+var file = fs.createWriteStream('public/downloads/slash-s3.jpg');
+client.getFile('sample.jpg', function(err, res) {
+   res.on('data', function(data) { file.write(data); });
+   res.on('end', function(chunk) { file.end(); });
+
+   console.log("File downloaded");
+});
+
 	
 	console.log("I am actually outside callback of upload --- what's happening now?");
     //dbFunctions.uploadImage(req.files.firstUpload); // TODO: give a callback function and check the flow if it returned back to index.js from dbFunctions!
     
 
-    res.render('index', { title: 'Express', userName: req.session.userName });
+    res.render('index', { title: 'Express', userName: req.session.userName, filePath: 'http://localhost:3000/downloads/slash-s3.jpg'  });
 };
 
 exports.getImage = function(req, res){
