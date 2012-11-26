@@ -41,6 +41,8 @@ exports.signout = function(req, res){
     res.redirect('/');
 };
 
+var fs = require('fs');
+
 
 // TO handle uploaded file
 exports.fileUpload = function(req, res) {
@@ -48,43 +50,38 @@ exports.fileUpload = function(req, res) {
     console.log("file-size:"+req.files.firstUpload.size);
     console.log("file-name:"+req.files.firstUpload.name);
  	console.log("file-path:"+ "../"+req.files.firstUpload.path);
-	
+		
 	var client = knox.createClient({
-    key: s3Config.key
-  , secret: s3Config.secret
-  , bucket: s3Config.bucket
-});
-
-
-
-   //DUMMY FILE I CREATED 'public/images/sample.jpg'
-
-client.putFile(req.files.firstUpload.path, 'sample.jpg', {'Content-Type': 'image/jpeg'}, function(err, result) {
-    if (err) { console.log('Operation Failed'+ err); }
-    else { console.log('Uploaded successfuly'); }
-
-});
-
-// get the file from amazon
-
-// We need the fs module so that we can write the stream to a file
-var fs = require('fs');
-// Set the file name for WriteStream
-var file = fs.createWriteStream('public/downloads/slash-s3.jpg');
-client.getFile('sample.jpg', function(err, res) {
-   res.on('data', function(data) { file.write(data); });
-   res.on('end', function(chunk) { file.end(); });
-
-   console.log("File downloaded");
-});
-
+    	key: s3Config.key
+  		,secret: s3Config.secret
+  		,bucket: s3Config.bucket
+	});
+	
+	dbFunctions.createPhotoDoc(req.session.userName, function(photoFileName){
+		client.putFile(req.files.firstUpload.path, photoFileName, {'Content-Type': 'image/jpeg'}, function(err, result) {
+	    	if (err) { 
+				console.log('Operation Failed'+ err); 
+			} else { 
+				console.log('Uploaded successfuly'); 
+			}
+		});
+		
+		// GET the file from amazon
+		// We need the fs module so that we can write the stream to a file
+		// Set the file name for WriteStream
+		var file = fs.createWriteStream('public/downloads/'+photoFileName);
+		client.getFile('sample.jpg', function(err, res) {
+		   res.on('data', function(data) { file.write(data); });
+		   res.on('end', function(chunk) { file.end(); });
+		   console.log("File downloaded");
+		   res.render('index', { title: 'Express', userName: req.session.userName, filePath: 'http://localhost:3000/downloads/'+photoFileName });
+		});
+			
+	});
 	
 	console.log("I am actually outside callback of upload --- what's happening now?");
     //dbFunctions.uploadImage(req.files.firstUpload); // TODO: give a callback function and check the flow if it returned back to index.js from dbFunctions!
-    
-
-    res.render('index', { title: 'Express', userName: req.session.userName, filePath: 'http://localhost:3000/downloads/slash-s3.jpg'  });
-};
+	};
 
 exports.getImage = function(req, res){
 console.log(req.params.id);

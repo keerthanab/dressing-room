@@ -6,6 +6,7 @@ var ObjectID = require('mongodb').ObjectID;
 var dbPort = 27017;
 var dbHost = "127.0.0.1";
 var dbName = 'envwe';
+var s3Config = require('../config/example-config');
 
 var AM = {}; 
 	AM.db = new Db(dbName, new Server(dbHost, dbPort, {}), {safe: false}, {strict: false});
@@ -17,7 +18,16 @@ var AM = {};
 		}
 	});	
 AM.users=AM.db.collection("users");
+AM.photos=AM.db.collection("photos");
 module.exports = AM;
+
+AM.createPhotoDoc=function(userName, callBack){
+	var photoID = new ObjectId();	
+	photoSubdoc = {photoID: photoID, photoUrl: 'www.s3amazonaws.com/s3Config.bucket/photoID'}; //TODO remove hard-coded file format
+	db.users.update({name: userName}, {'$push': {photos: photoSubdoc} });	
+	console.log("I have just saved the image url ");
+	callback(photoID.toString());	
+};
 
 AM.update=function (user, callBack){
 	console.log("I am in nodejs File "+ user.name);
@@ -47,8 +57,7 @@ AM.uploadImage = function(image, callBack){
 	});
 };
 
-AM.getImage = function(imgId){
-	
+AM.getImage = function(imgId){	
 	console.log(imgId);
 	var gridStore = new GridStore(AM.db, imgId, "r");
 	gridStore.open(function(err, gridStore) {
