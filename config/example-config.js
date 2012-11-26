@@ -1,43 +1,11 @@
 module.exports = {
-  variants: {
-    items: {
-      resize: {
-        mini : "300x200",
-        preview: "800x600"
-      },
-      crop: {
-        thumb: "200x200"
-      },
-      resizeAndCrop: {
-        large: {resize: "1000x1000", crop: "900x900"}
-      }
-    },
 
-    gallery: {
-      crop: {
-        thumb: "100x100"
-      }
-    },
-	
-	projects: "dressing-room"
-  },
-
-  storage: {
-    Rackspace: {
-      auth: {
-        username: "USERNAME",
-        apiKey: "API_KEY",
-        host: "lon.auth.api.rackspacecloud.com"
-      },
-      container: "CONTAINER_NAME"
-    },
-    S3: {
-      key: '',
-      secret: '',
+      key: 'AKIAIANJ4E5XFAUZ5XLQ',
+      secret: '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',
       bucket: 'chiti',
-      region: 'us-standard'
-    }
-  },
+      region: 'us-east-1'
+    
+  
 
-  debug: true
+ 
 }
