@@ -22,11 +22,13 @@ AM.photos=AM.db.collection("photos");
 module.exports = AM;
 
 AM.createPhotoDoc=function(userName, callBack){
-	var photoID = new ObjectId();	
-	photoSubdoc = {photoID: photoID, photoUrl: 'www.s3amazonaws.com/s3Config.bucket/photoID'}; //TODO remove hard-coded file format
-	db.users.update({name: userName}, {'$push': {photos: photoSubdoc} });	
+	var photoID = new ObjectID();	
+	var photoSubdoc = {photoID: photoID, photoUrl: 'www.s3amazonaws.com/'+s3Config.bucket+'/'+photoID}; //TODO remove hard-coded file format
+
+	console.log('ready to insert data');
+	AM.users.update({name: userName}, {'$push': {photos: photoSubdoc} });	
 	console.log("I have just saved the image url ");
-	callback(photoID.toString());	
+	callBack(photoID.toString());	
 };
 
 AM.update=function (user, callBack){

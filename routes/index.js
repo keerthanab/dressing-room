@@ -15,7 +15,7 @@ exports.home = function(req, res){
   console.log(""+req.session.userName);
 
   if(req.session.userName == null){
-  	res.render('home', { title: 'Envwe', userName: req.session.userName });
+  	res.render('home', { title: 'Envwe', userName: req.session.userName, filePath: null });
   } else{
   		res.render('index', { title: 'Envwe', userName: req.session.userName, filePath: null });
   	}
@@ -58,6 +58,9 @@ exports.fileUpload = function(req, res) {
 	});
 	
 	dbFunctions.createPhotoDoc(req.session.userName, function(photoFileName){
+
+		console.log("Here in callback function - back from db datas");
+
 		client.putFile(req.files.firstUpload.path, photoFileName, {'Content-Type': 'image/jpeg'}, function(err, result) {
 	    	if (err) { 
 				console.log('Operation Failed'+ err); 
@@ -70,17 +73,20 @@ exports.fileUpload = function(req, res) {
 		// We need the fs module so that we can write the stream to a file
 		// Set the file name for WriteStream
 		var file = fs.createWriteStream('public/downloads/'+photoFileName);
-		client.getFile('sample.jpg', function(err, res) {
+		client.getFile('https://s3.amazonaws.com/chiti/'+photoFileName, function(err, res) {
 		   res.on('data', function(data) { file.write(data); });
 		   res.on('end', function(chunk) { file.end(); });
 		   console.log("File downloaded");
-		   res.render('index', { title: 'Express', userName: req.session.userName, filePath: 'http://localhost:3000/downloads/'+photoFileName });
+		  
 		});
 			
 	});
 	
 	console.log("I am actually outside callback of upload --- what's happening now?");
     //dbFunctions.uploadImage(req.files.firstUpload); // TODO: give a callback function and check the flow if it returned back to index.js from dbFunctions!
+
+	 res.render('index', { title: 'Express', userName: req.session.userName, filePath: null });
+
 	};
 
 exports.getImage = function(req, res){
